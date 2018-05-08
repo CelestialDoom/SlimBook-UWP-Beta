@@ -21,6 +21,7 @@
                 <Grid Width="50" Height="50">
                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE700;" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" />
                 </Grid>
+                <TextBlock Text="SlimBook UWP Beta" FontSize="18" VerticalAlignment="Center" Foreground="White" />
             </StackPanel>
             <ScrollViewer x:Name="SV_SB" IsTabStop="True" VerticalScrollBarVisibility="Auto" Margin="0,50,0,0" BorderBrush="#FFA0A0A0">
                 <Grid>

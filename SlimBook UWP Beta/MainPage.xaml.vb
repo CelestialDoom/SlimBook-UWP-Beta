@@ -18,6 +18,7 @@ Public NotInheritable Class MainPage
         Else
             View.TryEnterFullScreenMode()
         End If
+        ChangeSize()
         MyBase.OnNavigatedTo(e)
     End Sub
 
@@ -27,6 +28,7 @@ Public NotInheritable Class MainPage
         Else
             View.TryEnterFullScreenMode()
         End If
+        ChangeSize()
     End Sub
 
     Private Async Sub OPTIONS(ByVal x As Integer)
@@ -130,7 +132,6 @@ Public NotInheritable Class MainPage
             CommBar.Visibility = Visibility.Visible
             SIDEBAR.Visibility = Visibility.Collapsed
             SlimBookUWPWebView.Margin = New Thickness(0, 0, 0, CommBar.ActualHeight)
-
         End If
         'SlimBookUWPWebView.Margin = New Thickness(SIDEBAR.Width, 0, 0, 0)
         If SetFullScreen Is Nothing Then
@@ -154,6 +155,7 @@ Public NotInheritable Class MainPage
             If LockTopBar = "0" Then
             End If
         End If
+        ChangeSize()
         Go_Home()
         AddHandler SystemNavigationManager.GetForCurrentView().BackRequested, Sub(s, a)
 
@@ -164,7 +166,7 @@ Public NotInheritable Class MainPage
                                                                               End Sub
     End Sub
 
-    Private Sub MainPage_SizeChanged(sender As Object, e As SizeChangedEventArgs) Handles Me.SizeChanged
+    Private Sub ChangeSize()
         Dim bounds = ApplicationView.GetForCurrentView().VisibleBounds
         Dim scaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel
         Dim size = New Size(bounds.Width * scaleFactor, bounds.Height * scaleFactor)
@@ -180,6 +182,10 @@ Public NotInheritable Class MainPage
                 SlimBookUWPWebView.Margin = New Thickness(0, 0, 0, CommBar.ActualHeight)
             End If
         End If
+    End Sub
+
+    Private Sub MainPage_SizeChanged(sender As Object, e As SizeChangedEventArgs) Handles Me.SizeChanged
+        ChangeSize()
     End Sub
 
     Private Sub OPEN_Tapped(sender As Object, e As TappedRoutedEventArgs) Handles OPEN.Tapped
