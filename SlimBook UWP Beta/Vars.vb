@@ -3,6 +3,7 @@
 Module Vars
     Public Is_Desktop As Boolean
     Public IS_SIDEBAR_OPEN As Boolean = False
+    Public PORTRAIT As Boolean
     Public localSettings As Windows.Storage.ApplicationDataContainer = Windows.Storage.ApplicationData.Current.LocalSettings
     Public SetFullScreen As Object = localSettings.Values("FullScreen")
     Public LockCommBar As Object = localSettings.Values("LockCommBar")

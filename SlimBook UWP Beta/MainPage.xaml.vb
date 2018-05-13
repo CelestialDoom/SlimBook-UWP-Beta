@@ -12,69 +12,6 @@ Imports Windows.UI.Core
 Public NotInheritable Class MainPage
     Inherits Page
 
-    Protected Overrides Sub OnNavigatedTo(ByVal e As NavigationEventArgs)
-        If SetFullScreen = "0" Then
-            View.ExitFullScreenMode()
-        Else
-            View.TryEnterFullScreenMode()
-        End If
-        ChangeSize()
-        MyBase.OnNavigatedTo(e)
-    End Sub
-
-    Private Sub MainPage_Loading(sender As FrameworkElement, args As Object) Handles Me.Loading
-        If SetFullScreen = "0" Then
-            View.ExitFullScreenMode()
-        Else
-            View.TryEnterFullScreenMode()
-        End If
-        ChangeSize()
-    End Sub
-
-    Private Async Sub OPTIONS(ByVal x As Integer)
-        Select Case x
-            Case 1  'HOME
-                SlimBookUWPWebView.Source = New Uri("https://touch.facebook.com/home.php")
-            Case 2  'TOP
-                Dim ScrollToTopString = "var int = setInterval(function(){window.scrollBy(0, -36); if( window.pageYOffset === 0 ) clearInterval(int); }, 0.1);"
-                Await SlimBookUWPWebView.InvokeScriptAsync("eval", New String() {ScrollToTopString})
-            Case 3  'BACK
-                If SlimBookUWPWebView.CanGoBack Then
-                    SlimBookUWPWebView.GoBack()
-                Else
-                    Await displayMessageAsync("Quit SlimBook UWP", "Are you sure you want to quit the app?", "")
-                End If
-            Case 4  'ABOUT
-                CLOSEALL()
-                'SettingsSetup()
-                Frame.Navigate(GetType(AboutSettings))
-            Case 5
-                Dim logoURL = New Uri("https://github.com/CelestialDoom/SlimBook-UWP")
-                Await Windows.System.Launcher.LaunchUriAsync(logoURL)
-            Case 6
-                CLOSEALL()
-                'Dim number As PackageVersion = Package.Current.Id.Version
-                'CAV.Text = "Current App Version: " & String.Format(" {0}.{1}.{2}" & vbCrLf, number.Major, number.Minor, number.Build)
-                'If G_SETTINGS.Visibility = Visibility.Collapsed Then
-                ' G_SETTINGS.Visibility = Visibility.Visible
-                ' Else
-                'G_SETTINGS.Visibility = Visibility.Collapsed
-                'End If
-                Frame.Navigate(GetType(AboutSettings), "SETTINGS")
-        End Select
-    End Sub
-
-    Public Sub DisplayPlatform()
-
-        Dim platformFamily = Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily
-
-        If platformFamily = "Windows.Desktop" Then
-            Is_Desktop = True
-        Else
-            Is_Desktop = False
-        End If
-    End Sub
-
     Dim AppName As String = Package.Current.DisplayName
 
     Async Sub BackPressed(sender As Object, e As BackPressedEventArgs)
@@ -93,6 +30,27 @@ Public NotInheritable Class MainPage
         IS_SIDEBAR_OPEN = False
     End Sub
 
+    Public Sub DisplayPlatform()
+
+        Dim platformFamily = Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily
+
+        If platformFamily = "Windows.Desktop" Then
+            Is_Desktop = True
+        Else
+            Is_Desktop = False
+        End If
+    End Sub
+
+    Protected Overrides Sub OnNavigatedTo(ByVal e As NavigationEventArgs)
+        If SetFullScreen = "0" Then
+            View.ExitFullScreenMode()
+        Else
+            View.TryEnterFullScreenMode()
+        End If
+        ChangeSize()
+        MyBase.OnNavigatedTo(e)
+    End Sub
+
     Private Sub ABOUT_Tapped(sender As Object, e As TappedRoutedEventArgs) Handles ABOUT.Tapped
         OPTIONS(4)
     End Sub
@@ -101,8 +59,57 @@ Public NotInheritable Class MainPage
         OPTIONS(3)
     End Sub
 
+    Private Sub CB_ABOUT_Click(sender As Object, e As RoutedEventArgs) Handles CB_ABOUT.Click
+        OPTIONS(4)
+    End Sub
+
+    Private Sub CB_BACK_Click(sender As Object, e As RoutedEventArgs) Handles CB_BACK.Click
+        OPTIONS(3)
+    End Sub
+
+    Private Sub CB_GITHUB_Click(sender As Object, e As RoutedEventArgs) Handles CB_GITHUB.Click
+        OPTIONS(5)
+    End Sub
+
+    Private Sub CB_HOME_Click(sender As Object, e As RoutedEventArgs) Handles CB_HOME.Click
+        OPTIONS(1)
+    End Sub
+
+    Private Sub CB_SETTINGS_Click(sender As Object, e As RoutedEventArgs) Handles CB_SETTINGS.Click
+        OPTIONS(6)
+    End Sub
+
+    Private Sub CB_TOP_Click(sender As Object, e As RoutedEventArgs) Handles CB_TOP.Click
+        OPTIONS(2)
+    End Sub
+
+    Private Sub ChangeSize()
+        Dim bounds = ApplicationView.GetForCurrentView().VisibleBounds
+        Dim scaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel
+        Dim size = New Size(bounds.Width * scaleFactor, bounds.Height * scaleFactor)
+        CLOSEALL()
+        If Not Is_Desktop Then
+            If size.Width > size.Height Then
+                PORTRAIT = False
+                CommBar.Visibility = Visibility.Collapsed
+                SIDEBAR.Visibility = Visibility.Visible
+                SlimBookUWPWebView.Margin = New Thickness(SIDEBAR.Width, 0, 0, 0)
+            Else
+                PORTRAIT = True
+                CommBar.Visibility = Visibility.Visible
+                SIDEBAR.Visibility = Visibility.Collapsed
+                SlimBookUWPWebView.Margin = New Thickness(0, 0, 0, CommBar.ActualHeight)
+            End If
+        End If
+    End Sub
+
     Private Sub CLOSEALL()
         CLOSE_SB()
+        G_SETTINGS.Visibility = Visibility.Collapsed
+    End Sub
+
+    Private Sub CS_Click(sender As Object, e As RoutedEventArgs) Handles CS.Click
+        G_SETTINGS.Visibility = Visibility.Collapsed
     End Sub
 
     Private Sub GITHUB_Tapped(sender As Object, e As TappedRoutedEventArgs) Handles GITHUB.Tapped
@@ -133,7 +140,7 @@ Public NotInheritable Class MainPage
             SIDEBAR.Visibility = Visibility.Collapsed
             SlimBookUWPWebView.Margin = New Thickness(0, 0, 0, CommBar.ActualHeight)
         End If
-        'SlimBookUWPWebView.Margin = New Thickness(SIDEBAR.Width, 0, 0, 0)
+
         If SetFullScreen Is Nothing Then
             localSettings.Values("FullScreen") = "0"
         Else
@@ -166,22 +173,13 @@ Public NotInheritable Class MainPage
                                                                               End Sub
     End Sub
 
-    Private Sub ChangeSize()
-        Dim bounds = ApplicationView.GetForCurrentView().VisibleBounds
-        Dim scaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel
-        Dim size = New Size(bounds.Width * scaleFactor, bounds.Height * scaleFactor)
-        CLOSEALL()
-        If Not Is_Desktop Then
-            If size.Width > size.Height Then
-                CommBar.Visibility = Visibility.Collapsed
-                SIDEBAR.Visibility = Visibility.Visible
-                SlimBookUWPWebView.Margin = New Thickness(SIDEBAR.Width, 0, 0, 0)
-            Else
-                CommBar.Visibility = Visibility.Visible
-                SIDEBAR.Visibility = Visibility.Collapsed
-                SlimBookUWPWebView.Margin = New Thickness(0, 0, 0, CommBar.ActualHeight)
-            End If
+    Private Sub MainPage_Loading(sender As FrameworkElement, args As Object) Handles Me.Loading
+        If SetFullScreen = "0" Then
+            View.ExitFullScreenMode()
+        Else
+            View.TryEnterFullScreenMode()
         End If
+        ChangeSize()
     End Sub
 
     Private Sub MainPage_SizeChanged(sender As Object, e As SizeChangedEventArgs) Handles Me.SizeChanged
@@ -198,6 +196,31 @@ Public NotInheritable Class MainPage
         End If
     End Sub
 
+    Private Async Sub OPTIONS(ByVal x As Integer)
+        Select Case x
+            Case 1  'HOME
+                SlimBookUWPWebView.Source = New Uri("https://touch.facebook.com/home.php")
+            Case 2  'TOP
+                Dim ScrollToTopString = "var int = setInterval(function(){window.scrollBy(0, -36); if( window.pageYOffset === 0 ) clearInterval(int); }, 0.1);"
+                Await SlimBookUWPWebView.InvokeScriptAsync("eval", New String() {ScrollToTopString})
+            Case 3  'BACK
+                If SlimBookUWPWebView.CanGoBack Then
+                    SlimBookUWPWebView.GoBack()
+                Else
+                    Await displayMessageAsync("Quit SlimBook UWP", "Are you sure you want to quit the app?", "")
+                End If
+            Case 4  'ABOUT
+                CLOSEALL()
+                SettingsSetup(0)
+            Case 5
+                Dim logoURL = New Uri("https://github.com/CelestialDoom/SlimBook-UWP")
+                Await Windows.System.Launcher.LaunchUriAsync(logoURL)
+            Case 6
+                CLOSEALL()
+                SettingsSetup(1)
+        End Select
+    End Sub
+
     Private Async Sub QUIT_Tapped(sender As Object, e As TappedRoutedEventArgs) Handles QUIT.Tapped
         Await displayMessageAsync("Quit SlimBook UWP", "Are you sure you want to quit the app?", "")
     End Sub
@@ -206,8 +229,30 @@ Public NotInheritable Class MainPage
         OPTIONS(6)
     End Sub
 
-    Private Sub SettingsSetup()
+    Private Sub SettingsSetup(ByVal x As Integer)
         Dim number As PackageVersion = Package.Current.Id.Version
+        Select Case x
+            Case 0
+                PivotSettingsAbout.SelectedIndex = 0
+            Case 1
+                PivotSettingsAbout.SelectedIndex = 3
+        End Select
+        AN.Text = AppName
+        version.Text = String.Format(" {0}.{1}.{2}" & vbCrLf, number.Major, number.Minor, number.Build)
+        privacy.Text = PrivacyInfo
+        SVC.ChangeView(Nothing, 0, Nothing, True)
+        SVP.ChangeView(Nothing, 0, Nothing, True)
+        SVS.ChangeView(Nothing, 0, Nothing, True)
+        If Is_Desktop Then
+            G_SETTINGS.Margin = New Thickness((SIDEBAR.Width + 10), 10, 10, 10)
+        Else
+            If Not PORTRAIT Then
+                G_SETTINGS.Margin = New Thickness((SIDEBAR.Width + 10), 10, 10, 10)
+            Else
+                G_SETTINGS.Margin = New Thickness(10, 10, 10, (CommBar.ActualHeight + 10))
+            End If
+        End If
+        G_SETTINGS.Visibility = Visibility.Visible
     End Sub
 
     Private Sub SlimBookUWPWebView_GotFocus(sender As Object, e As RoutedEventArgs) Handles SlimBookUWPWebView.GotFocus
@@ -242,32 +287,43 @@ Public NotInheritable Class MainPage
         End If
     End Sub
 
+    Private Sub togg_Ads_Toggled(sender As Object, e As RoutedEventArgs) Handles togg_Ads.Toggled
+        Dim toggleSwitch As ToggleSwitch = TryCast(sender, ToggleSwitch)
+        If toggleSwitch IsNot Nothing Then
+            If toggleSwitch.IsOn = True Then
+                localSettings.Values("Hide_Ads") = "1"
+            Else
+                localSettings.Values("Hide_Ads") = "0"
+            End If
+        End If
+    End Sub
+
+    Private Sub togg_FS_Toggled(sender As Object, e As RoutedEventArgs) Handles togg_FS.Toggled
+        Dim toggleSwitch As ToggleSwitch = TryCast(sender, ToggleSwitch)
+        If toggleSwitch IsNot Nothing Then
+            If toggleSwitch.IsOn = True Then
+                View.TryEnterFullScreenMode()
+                localSettings.Values("FullScreen") = "1"
+            Else
+                View.ExitFullScreenMode()
+                localSettings.Values("FullScreen") = "0"
+            End If
+        End If
+    End Sub
+
+    Private Sub togg_TB_Toggled(sender As Object, e As RoutedEventArgs) Handles togg_TB.Toggled
+        Dim toggleSwitch As ToggleSwitch = TryCast(sender, ToggleSwitch)
+        If toggleSwitch IsNot Nothing Then
+            If toggleSwitch.IsOn = True Then
+                localSettings.Values("LockTopBar") = "1"
+            Else
+                localSettings.Values("LockTopBar") = "0"
+            End If
+        End If
+    End Sub
+
     Private Sub TOP_Tapped(sender As Object, e As TappedRoutedEventArgs) Handles TOP.Tapped
         OPTIONS(2)
-    End Sub
-
-    Private Sub CB_HOME_Click(sender As Object, e As RoutedEventArgs) Handles CB_HOME.Click
-        OPTIONS(1)
-    End Sub
-
-    Private Sub CB_TOP_Click(sender As Object, e As RoutedEventArgs) Handles CB_TOP.Click
-        OPTIONS(2)
-    End Sub
-
-    Private Sub CB_BACK_Click(sender As Object, e As RoutedEventArgs) Handles CB_BACK.Click
-        OPTIONS(3)
-    End Sub
-
-    Private Sub CB_ABOUT_Click(sender As Object, e As RoutedEventArgs) Handles CB_ABOUT.Click
-        OPTIONS(4)
-    End Sub
-
-    Private Sub CB_GITHUB_Click(sender As Object, e As RoutedEventArgs) Handles CB_GITHUB.Click
-        OPTIONS(5)
-    End Sub
-
-    Private Sub CB_SETTINGS_Click(sender As Object, e As RoutedEventArgs) Handles CB_SETTINGS.Click
-        OPTIONS(6)
     End Sub
 
 End Class
