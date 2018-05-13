@@ -2,7 +2,7 @@
 # SlimBook-UWP-Beta
 [![GPL Licence](https://badges.frapsoft.com/os/gpl/gpl.png?v=103)](https://opensource.org/licenses/GPL-3.0/)
 [![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.png?v=103)](https://github.com/ellerbrock/open-source-badges/)
-[![HitCount](http://hits.dwyl.com/CelestialDoom/SlimBook-UWP.svg)](http://hits.dwyl.com/CelestialDoom/SlimBook-UWP-Beta)
+[![HitCount](http://hits.dwyl.io/Celestial Doom/SlimBook-UWP-Beta.svg)](http://hits.dwyl.io/Celestial Doom/SlimBook-UWP-Beta)
 [![GitHub contributors](https://img.shields.io/github/contributors/CelestialDoom/SlimBook-UWP-Beta.svg)](https://github.com/CelestialDoom/SlimBook-UWP-Beta/graphs/contributors)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/CelestialDoom/SlimBook-UWP-Beta/issues)
 
