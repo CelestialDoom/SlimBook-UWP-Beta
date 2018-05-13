@@ -26,7 +26,7 @@ No personal, or private, information of either you, or your device, is collected
 
 Neither is ANY information transmitted by this app.
 ***
-Now available in the [Windows Store](https://www.microsoft.com/store/apps/9P4S56MZPPMW)
+~~Now available in the Windows Store~~
 
 ## Getting Started
 
